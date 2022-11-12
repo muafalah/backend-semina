@@ -22,7 +22,7 @@ const createCategories = async (req) => {
     const { name } = req.body
 
     // cari categories dengan field name
-    const check = await Categories.findOne({ name: name })
+    const check = await Categories.findOne({ name: name, organizer: req.user.organizer })
 
     // apa bila check true / data categories sudah ada maka kita tampilkan error bad request dengan message kategori nama duplikat
     if (check) throw new BadRequestError('kategori nama duplikat')
@@ -39,7 +39,6 @@ const updateCategories = async (req) => {
     //cari categories berdasarkan field id
     const checkCategories = await Categories.findOne({
         // name,
-        organizer: req.user.organizer,
         _id: id,
     })
 
@@ -50,6 +49,7 @@ const updateCategories = async (req) => {
     // cari categories dengan field name dan id selain dari yang dikirim dari params
     const check = await Categories.findOne({
         name: name,
+        organizer: req.user.organizer,
         _id: { $ne: id },
     });
 
@@ -58,7 +58,7 @@ const updateCategories = async (req) => {
 
     const result = await Categories.findOneAndUpdate(
         { _id: id },
-        { name: name },
+        { name: name, organizer: req.user.organizer },
         { new: true, runValidators: true }
     );
 
